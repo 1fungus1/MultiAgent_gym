@@ -1,0 +1,2 @@
+"""Gym manager application package."""
+

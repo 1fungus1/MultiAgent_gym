@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+*.egg-info/
+
+# Local configuration
+.env
+
+# IDE
+.idea/
+*.iml
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Logs and local databases
+*.log
+*.sqlite3

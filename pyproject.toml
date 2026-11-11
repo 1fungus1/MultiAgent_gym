@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MultiAgent_gym"
+version = "1.0.0"
+description = "MultiAgent_gym 多智能体健身房管理系统"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.14,<2.0",
+    "fastapi>=0.115,<1.0",
+    "httpx>=0.28,<1.0",
+    "pymilvus>=2.5,<3.0",
+    "qrcode[pil]>=8.0,<9.0",
+    "PyJWT>=2.10,<3.0",
+    "PyMySQL>=1.1,<2.0",
+    "pydantic-settings>=2.7,<3.0",
+    "pwdlib[argon2]>=0.2,<1.0",
+    "SQLAlchemy>=2.0,<3.0",
+    "uvicorn[standard]>=0.34,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-cov>=6.0,<7.0",
+    "ruff>=0.9,<1.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B008", "UP046"]

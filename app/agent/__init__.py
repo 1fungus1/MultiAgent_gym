@@ -1,0 +1,2 @@
+"""MultiAgent Gym assistant package."""
+

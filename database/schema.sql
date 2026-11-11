@@ -1,0 +1,101 @@
+CREATE DATABASE IF NOT EXISTS multiagent_gym
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE multiagent_gym;
+
+CREATE TABLE IF NOT EXISTS member (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  phone VARCHAR(20),
+  gender VARCHAR(10),
+  age INT,
+  card_type VARCHAR(30),
+  expire_time DATE,
+  status TINYINT NOT NULL DEFAULT 1,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS sys_user (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL,
+  related_id BIGINT NULL,
+  status TINYINT NOT NULL DEFAULT 1,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_sys_user_related_id (related_id),
+  CONSTRAINT fk_sys_user_member FOREIGN KEY (related_id)
+    REFERENCES member(id) ON DELETE CASCADE
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS coach (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  phone VARCHAR(20),
+  specialty VARCHAR(100),
+  entry_date DATE,
+  status TINYINT NOT NULL DEFAULT 1,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS course (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  type VARCHAR(50),
+  coach_id BIGINT,
+  start_time DATETIME,
+  end_time DATETIME,
+  capacity INT NOT NULL DEFAULT 20,
+  booked_count INT NOT NULL DEFAULT 0,
+  status TINYINT NOT NULL DEFAULT 1,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_course_coach_start (coach_id, start_time),
+  CONSTRAINT fk_course_coach FOREIGN KEY (coach_id) REFERENCES coach(id)
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS appointment (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  member_id BIGINT NOT NULL,
+  course_id BIGINT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'reserved',
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_member_course (member_id, course_id),
+  KEY idx_appointment_course_status (course_id, status),
+  CONSTRAINT fk_appointment_member FOREIGN KEY (member_id)
+    REFERENCES member(id) ON DELETE CASCADE,
+  CONSTRAINT fk_appointment_course FOREIGN KEY (course_id)
+    REFERENCES course(id) ON DELETE CASCADE
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS appointment_action_log (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  appointment_id BIGINT NOT NULL,
+  member_id BIGINT NOT NULL,
+  course_id BIGINT NOT NULL,
+  target_course_id BIGINT NULL,
+  action VARCHAR(20) NOT NULL,
+  detail VARCHAR(255),
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_appointment_log_create_time (create_time),
+  KEY idx_appointment_log_member (member_id)
+) DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS notification (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  member_id BIGINT NULL,
+  type VARCHAR(30) NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  content VARCHAR(500) NOT NULL,
+  related_id BIGINT NULL,
+  is_read TINYINT NOT NULL DEFAULT 0,
+  create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_notification_user_read (user_id, is_read),
+  KEY idx_notification_create_time (create_time)
+) DEFAULT CHARSET=utf8mb4;
